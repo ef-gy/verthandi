@@ -129,3 +129,27 @@ create table collaborator_tags
     collaborator integer not null references collaborators (id),
     tag text not null
 );
+
+create view time_spent_on_tasks as select
+    end_time - start_time as time,
+    collaborator,
+    task
+    from bookings join works_on
+    on bookings.id = works_on.booking
+
+create view total_time_on_tasks as select
+    sum(time) as total_time,
+    collaborator,
+    task
+    from time_spent_on_tasks
+    group by task, collaborator
+
+create view total_time_on_project as select
+    sum(total_time) as total_time,
+    collaborator,
+    project
+    from time_spent_on_tasks join tasks 
+    on tasks.id = total_time_on_tasks.task
+    group by project, collaborator
+
+
