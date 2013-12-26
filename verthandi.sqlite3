@@ -100,3 +100,32 @@ create table is_project_member
     role text,
     role_description text
 );
+
+-- Tag tables; every entity type that can be tagged
+-- receives its own tag table.
+-- To find entities of multiple types with the same tags,
+-- just combine the tables with union (all).
+
+create table project_tags
+(
+    project integer not null references projects (id),
+    tag text not null
+);
+
+create table task_tags
+(
+    task integer not null references tasks (id),
+    tag text not null
+);
+
+create table team_tags
+(
+    team integer not null references teams (id),
+    tag text not null
+);
+
+create table collaborator_tags
+(
+    collaborator integer not null references collaborators (id),
+    tag text not null
+);
