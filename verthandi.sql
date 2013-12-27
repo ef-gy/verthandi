@@ -4,8 +4,9 @@ create table projects
     name text not null,
     description text,
     customer integer references customers (id),
-    priority integer,
-    deadline real
+    deadline real,
+    urgency integer,
+    importance integer
 );
 
 create table tasks
@@ -14,7 +15,8 @@ create table tasks
     project integer references projects (id),
     title text not null,
     description text,
-    priority integer,
+    urgency integer,
+    importance integer,
     -- original time estimate in hours
     hours_estimated_orig numeric,
     -- the original time estimate may be corrected
