@@ -14,3 +14,7 @@
 
 # Vim swap files
 *.swp
+
+# Symlinks
+include/ef.gy
+documentation/libefgy.tag
