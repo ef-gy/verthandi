@@ -18,6 +18,11 @@
 # Symlinks
 include/ef.gy
 documentation/libefgy.tag
+
+# Documentation
 documentation/html
 documentation/verthandi.tag
 documentation/xml
+
+# Binaries
+verthandi
