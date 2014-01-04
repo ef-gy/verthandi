@@ -27,3 +27,6 @@ documentation/xml
 # Binaries
 verthandi
 !include/verthandi
+
+# Data Headers
+include/verthandi/data-*.h
