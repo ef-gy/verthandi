@@ -1,4 +1,8 @@
 /**\file
+ * \brief Main process (HTTP)
+ *
+ * The main entry point for verthandi; currently only provides an HTTP XML
+ * interface using efgy::net::http.
  *
  * \copyright
  * Copyright (c) 2013-2014, Verthandi Project Members
@@ -25,38 +29,33 @@
  * \see Project Source Code: http://github.com/machinelady/verthandi.git
  */
 
-#include <verthandi/http.h>
+#if !defined(VERTHANDI_HTTP_H)
+#define VERTHANDI_HTTP_H
 
-#include <cstdlib>
+#include <ef.gy/http.h>
 
-#include <iostream>
-#include <boost/regex.hpp>
-#include <boost/algorithm/string/replace.hpp>
-
-using namespace boost::asio;
-using namespace boost;
-using namespace std;
-
-int main (int argc, char* argv[])
+namespace verthandi
 {
-    try
+    class http;
+
+    typedef efgy::net::http::server<http> server;
+    typedef efgy::net::http::session<http> session;
+
+    class http
     {
-        if (argc != 3)
-        {
-            std::cerr << "Usage: " << argv[0] << " <socket> <database>\n";
-            return 1;
-        }
+        public:
+            bool operator () (session &a)
+            {
+                a.reply (200,
+                         "Content-Type: text/xml; charset=utf-8\r\n",
+                         std::string("<?xml version='1.0' encoding='utf-8'?>"
+                                     "<verthandi xmlns='http://verthandi.org/2014/verthandi'/>")
+                        );
 
-        boost::asio::io_service io_service;
+                return true;
+            }
+    };
 
-        verthandi::server s(io_service, argv[1]);
+};
 
-        io_service.run();
-    }
-    catch (std::exception &e)
-    {
-        std::cerr << "Exception: " << e.what() << "\n";
-    }
-
-    return 0;
-}
+#endif

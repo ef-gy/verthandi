@@ -26,7 +26,7 @@
  * THE SOFTWARE.
  *
  * \see Project Documentation: http://ef.gy/documentation/verthandi
- * \see Project Source Code: http://git.becquerel.org/jyujin/verthandi.git
+ * \see Project Source Code: http://github.com/machinelady/verthandi.git
  */
 
 #if !defined(VERTHANDI_VERSION_H)
