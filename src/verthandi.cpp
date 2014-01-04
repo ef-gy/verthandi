@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
             return 1;
         }
 
-        boost::asio::io_service io_service;
+        io_service io_service;
 
         verthandi::server s(io_service, argv[1]);
 
