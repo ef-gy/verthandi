@@ -27,8 +27,6 @@
 
 #include <verthandi/http.h>
 
-#include <cstdlib>
-
 #include <iostream>
 #include <boost/regex.hpp>
 #include <boost/algorithm/string/replace.hpp>
