@@ -47,7 +47,7 @@ int main (int argc, char* argv[])
 
         io_service io_service;
 
-        verthandi::server s(io_service, argv[1]);
+        verthandi::http::server s(io_service, argv[1], argv[2]);
 
         io_service.run();
     }

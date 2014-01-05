@@ -33,29 +33,43 @@
 #define VERTHANDI_HTTP_H
 
 #include <ef.gy/http.h>
+#include <ef.gy/sqlite.h>
+#include <verthandi/data-sqlite-verthandi.h>
 
 namespace verthandi
 {
-    class http;
-
-    typedef efgy::net::http::server<http> server;
-    typedef efgy::net::http::session<http> session;
-
-    class http
+    namespace http
     {
-        public:
-            bool operator () (session &a)
-            {
-                a.reply (200,
-                         "Content-Type: text/xml; charset=utf-8\r\n",
-                         std::string("<?xml version='1.0' encoding='utf-8'?>"
-                                     "<verthandi xmlns='http://verthandi.org/2014/verthandi'/>")
-                        );
+        class responder;
 
-                return true;
-            }
+        class state
+        {
+            public:
+                state (void *aux)
+                    : sql((const char *)aux, verthandi::data::verthandi)
+                    {}
+
+                efgy::database::sqlite sql;
+        };
+
+        typedef efgy::net::http::server<responder,state> server;
+        typedef efgy::net::http::session<responder,state> session;
+
+        class responder
+        {
+            public:
+                bool operator () (session &a)
+                {
+                    a.reply (200,
+                             "Content-Type: text/xml; charset=utf-8\r\n",
+                             std::string("<?xml version='1.0' encoding='utf-8'?>"
+                                         "<verthandi xmlns='http://verthandi.org/2014/verthandi'/>")
+                            );
+
+                    return true;
+                }
+        };
     };
-
 };
 
 #endif
