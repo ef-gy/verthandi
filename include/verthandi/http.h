@@ -63,7 +63,9 @@ namespace verthandi
                     a.reply (200,
                              "Content-Type: text/xml; charset=utf-8\r\n",
                              std::string("<?xml version='1.0' encoding='utf-8'?>"
-                                         "<verthandi xmlns='http://verthandi.org/2014/verthandi'/>")
+                                         "<verthandi xmlns='http://verthandi.org/2014/verthandi'>")
+                             + a.resource
+                             + "</verthandi>"
                             );
 
                     return true;
