@@ -33,15 +33,22 @@
 #define VERTHANDI_HTTP_H
 
 #include <ef.gy/http.h>
-#include <ef.gy/sqlite.h>
+
+#include <verthandi/project.h>
 #include <verthandi/data-sqlite-verthandi.h>
+
+#include <boost/regex.hpp>
+
+#include <sstream>
 
 namespace verthandi
 {
     namespace http
     {
+        template <typename db>
         class responder;
 
+        template <typename db>
         class state
         {
             public:
@@ -49,24 +56,43 @@ namespace verthandi
                     : sql((const char *)aux, verthandi::data::verthandi)
                     {}
 
-                efgy::database::sqlite sql;
+                db sql;
         };
 
-        typedef efgy::net::http::server<responder,state> server;
-        typedef efgy::net::http::session<responder,state> session;
+        typedef efgy::net::http::server<responder<efgy::database::sqlite>,state<efgy::database::sqlite>> server;
+        typedef efgy::net::http::session<responder<efgy::database::sqlite>,state<efgy::database::sqlite>> session;
 
+        template <typename db>
         class responder
         {
             public:
                 bool operator () (session &a)
                 {
-                    a.reply (200,
-                             "Content-Type: text/xml; charset=utf-8\r\n",
-                             std::string("<?xml version='1.0' encoding='utf-8'?>"
-                                         "<verthandi xmlns='http://verthandi.org/2014/verthandi'>")
-                             + a.resource
-                             + "</verthandi>"
-                            );
+                    std::ostringstream s("");
+
+                    static const boost::regex rproject("/verthandi/project/(\\d+)");
+                    boost::smatch matches;
+
+                    if (boost::regex_match(a.resource, matches, rproject))
+                    {
+                        int projectID = 0;
+                        std::stringstream is(matches[1]);
+                        is >> projectID;
+
+                        s << "<?xml version='1.0' encoding='utf-8'?>"
+                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>"
+                          << project<db>(a.state->sql, projectID)
+                          << "</verthandi>";
+                    }
+                    else
+                    {
+                        s << "<?xml version='1.0' encoding='utf-8'?>"
+                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>"
+                          << "<resource>" << a.resource << "</resource>"
+                          << "</verthandi>";
+                    }
+
+                    a.reply (200, "Content-Type: text/xml; charset=utf-8\r\n", s.str());
 
                     return true;
                 }
