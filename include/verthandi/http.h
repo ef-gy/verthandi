@@ -35,6 +35,7 @@
 #include <ef.gy/http.h>
 
 #include <verthandi/project.h>
+#include <verthandi/task.h>
 #include <verthandi/data-sqlite-verthandi.h>
 
 #include <boost/regex.hpp>
@@ -53,7 +54,7 @@ namespace verthandi
         {
             public:
                 state (void *aux)
-                    : sql((const char *)aux, verthandi::data::verthandi)
+                    : sql((const char *)aux, verthandi::data::sqlite::verthandi)
                     {}
 
                 db sql;
@@ -71,6 +72,7 @@ namespace verthandi
                     std::ostringstream s("");
 
                     static const boost::regex rproject("/verthandi/project/(\\d+)");
+                    static const boost::regex rtask("/verthandi/task/(\\d+)");
                     boost::smatch matches;
 
                     if (boost::regex_match(a.resource, matches, rproject))
@@ -82,6 +84,17 @@ namespace verthandi
                         s << "<?xml version='1.0' encoding='utf-8'?>"
                              "<verthandi xmlns='http://verthandi.org/2014/verthandi'>"
                           << project<db>(a.state->sql, projectID)
+                          << "</verthandi>";
+                    }
+                    else if (boost::regex_match(a.resource, matches, rtask))
+                    {
+                        int taskID = 0;
+                        std::stringstream is(matches[1]);
+                        is >> taskID;
+
+                        s << "<?xml version='1.0' encoding='utf-8'?>"
+                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>"
+                          << task<db>(a.state->sql, taskID)
                           << "</verthandi>";
                     }
                     else

@@ -25,8 +25,8 @@
  * \see Project Source Code: http://github.com/machinelady/verthandi.git
  */
 
-#if !defined(VERTHANDI_PROJECT_H)
-#define VERTHANDI_PROJECT_H
+#if !defined(VERTHANDI_TASK_H)
+#define VERTHANDI_TASK_H
 
 #include <ef.gy/sqlite.h>
 
@@ -36,10 +36,10 @@
 namespace verthandi
 {
     template <typename db>
-    class project
+    class task
     {
         public:
-            project (db &pDatabase, typename db::id pID)
+            task (db &pDatabase, typename db::id pID)
                 : database(pDatabase), id(pID) { sync(); }
 
             typename db::id id;
@@ -51,7 +51,7 @@ namespace verthandi
 
             bool sync (void)
             {
-                typename db::statement select("select name from projects where id=?1", database);
+                typename db::statement select("select title from tasks where id=?1", database);
                 select.bind(1, id);
                 if (select.step() && select.row)
                 {
@@ -63,10 +63,10 @@ namespace verthandi
     };
 
     template <typename C, typename db>
-    std::basic_ostream<C> &operator << (std::basic_ostream<C> &out, const project<db> &p)
+    std::basic_ostream<C> &operator << (std::basic_ostream<C> &out, const task<db> &p)
     {
-        return p.valid ? out << "<project id='" << p.id << "' name='" << p.name << "'/>"
-                       : out << "<project id='" << p.id << "' status='invalid'/>";
+        return p.valid ? out << "<task id='" << p.id << "' name='" << p.name << "'/>"
+                       : out << "<task id='" << p.id << "' status='invalid'/>";
     }
 };
 
