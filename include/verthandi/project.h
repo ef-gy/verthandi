@@ -1,4 +1,8 @@
 /**\file
+ * \brief Project abstraction
+ *
+ * Contains templates that provide access to projects in Verthandi's database. A
+ * project is a single entry in the 'projects' table.
  *
  * \copyright
  * Copyright (c) 2013-2014, Verthandi Project Members
@@ -28,27 +32,55 @@
 #if !defined(VERTHANDI_PROJECT_H)
 #define VERTHANDI_PROJECT_H
 
-#include <ef.gy/sqlite.h>
+#include <verthandi/object.h>
 
-#include <string>
 #include <ostream>
+#include <string>
 
 namespace verthandi
 {
+    /**\brief A project
+     *
+     * Contains a single row of the 'projects' table in the database. The row is
+     * identified by a numeric ID, which is why this class derives from the
+     * verthandi::object template.
+     *
+     * \tparam db The database access class to use, e.g. efgy::database::sqlite
+     */
     template <typename db>
-    class project
+    class project : public object<db>
     {
         public:
-            project (db &pDatabase, typename db::id pID)
-                : database(pDatabase), id(pID) { sync(); }
+            /**\copydoc object<db>::object
+             *
+             * In instances of the task type, the pID is assumed to refer to the
+             * contents of the tasks.id column, and the corresponding row is
+             * automatically retrieved when an instance of the class is
+             * initialised.
+             */
+            project (db &pDatabase, const typename db::id &pID)
+                : object<db>(pDatabase, pID) { sync(); }
 
-            typename db::id id;
+            /**\brief Project name
+             *
+             * Corresponds to the projects.name field in the database.
+             */
             std::string name;
-            bool valid;
+
+            using object<db>::id;
+            using object<db>::valid;
 
         protected:
-            db &database;
+            using object<db>::database;
 
+            /**\brief Retrieve project data from database
+             *
+             * Selects the project's data from the database and stores the data
+             * in the class instance.
+             *
+             * \returns 'true' if the project instance is now in a valid state,
+             *          false otherwise.
+             */
             bool sync (void)
             {
                 typename db::statement select("select name from projects where id=?1", database);
@@ -62,6 +94,19 @@ namespace verthandi
             }
     };
 
+    /**\brief Serialise project to stream
+     *
+     * Writes an XML representation of a project to a C++ stream object.
+     *
+     * \tparam C  Character type of the stream.
+     * \tparam db Database type of the task instance.
+     *
+     * \param[out] out The stream to write to.
+     * \param[in]  p   The task instance to write to the stream.
+     *
+     * \returns A reference to the 'out' parameter, as is customary with C++
+     *          streams.
+     */
     template <typename C, typename db>
     std::basic_ostream<C> &operator << (std::basic_ostream<C> &out, const project<db> &p)
     {

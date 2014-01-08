@@ -1,4 +1,8 @@
 /**\file
+ * \brief Abstraction for a task
+ *
+ * Contains a C++ abstraction for a task, which is a single member of the tasks
+ * table.
  *
  * \copyright
  * Copyright (c) 2013-2014, Verthandi Project Members
@@ -28,44 +32,85 @@
 #if !defined(VERTHANDI_TASK_H)
 #define VERTHANDI_TASK_H
 
-#include <ef.gy/sqlite.h>
+#include <verthandi/object.h>
 
-#include <string>
 #include <ostream>
+#include <string>
 
 namespace verthandi
 {
+    /**\brief A project-specific task
+     *
+     * Contains a single row of the 'tasks' table in the database. The row is
+     * identified by a numeric ID, which is why this class derives from the
+     * verthandi::object template.
+     *
+     * \tparam db The database access class to use, e.g. efgy::database::sqlite
+     */
     template <typename db>
-    class task
+    class task : public object<db>
     {
         public:
-            task (db &pDatabase, typename db::id pID)
-                : database(pDatabase), id(pID) { sync(); }
+            /**\copydoc object<db>::object
+             *
+             * In instances of the task type, the pID is assumed to refer to the
+             * contents of the tasks.id column, and the corresponding row is
+             * automatically retrieved when an instance of the class is
+             * initialised.
+             */
+            task (db &pDatabase, const typename db::id &pID)
+                : object<db>(pDatabase, pID) { sync(); }
 
-            typename db::id id;
-            std::string name;
-            bool valid;
+            /**\brief Task title
+             *
+             * Corresponds to the tasks.title field in the database.
+             */
+            std::string title;
+
+            using object<db>::id;
+            using object<db>::valid;
 
         protected:
-            db &database;
+            using object<db>::database;
 
+            /**\brief Retrieve task data from database
+             *
+             * Selects the task's data from the database and stores the data in
+             * the class instance.
+             *
+             * \returns 'true' if the task instance is now in a valid state,
+             *          false otherwise.
+             */
             bool sync (void)
             {
                 typename db::statement select("select title from tasks where id=?1", database);
                 select.bind(1, id);
                 if (select.step() && select.row)
                 {
-                    select.get(0, name);
+                    select.get(0, title);
                     return (valid = true);
                 }
                 return (valid = false);
             }
     };
 
+    /**\brief Serialise task to stream
+     *
+     * Writes an XML representation of a task to a C++ stream object.
+     *
+     * \tparam C  Character type of the stream.
+     * \tparam db Database type of the task instance.
+     *
+     * \param[out] out The stream to write to.
+     * \param[in]  p   The task instance to write to the stream.
+     *
+     * \returns A reference to the 'out' parameter, as is customary with C++
+     *          streams.
+     */
     template <typename C, typename db>
     std::basic_ostream<C> &operator << (std::basic_ostream<C> &out, const task<db> &p)
     {
-        return p.valid ? out << "<task id='" << p.id << "' name='" << p.name << "'/>"
+        return p.valid ? out << "<task id='" << p.id << "' name='" << p.title << "'/>"
                        : out << "<task id='" << p.id << "' status='invalid'/>";
     }
 };
