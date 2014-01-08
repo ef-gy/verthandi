@@ -44,29 +44,78 @@
 
 namespace verthandi
 {
+    /**\brief HTTP-related templates
+     *
+     * This namespace groups together all sorts of templates that are related to
+     * handling HTTP queries.
+     */
     namespace http
     {
+        /**\brief HTTP responder
+         *
+         * A functor that processes HTTP requests and generates proper replies
+         * to valid queries.
+         *
+         * \tparam db The database access class to use, e.g.
+         *            efgy::database::sqlite
+         */
         template <typename db>
         class responder;
 
+        /**\brief Verthandi state class
+         *
+         * Contains the state that is necessary to generate HTTP replies in the
+         * responder class.
+         */
         template <typename db>
         class state
         {
             public:
+                /**\brief Construct with database file
+                 *
+                 * This default constructor initialises an instance of the
+                 * database class at the given location.
+                 */
                 state (void *aux)
                     : sql((const char *)aux, verthandi::data::sqlite::verthandi)
                     {}
 
+                /**\brief Database connection
+                 *
+                 * Contains the proper, initialised database connection that the
+                 * constructor establishes.
+                 */
                 db sql;
         };
 
+        /**\brief Default server
+         *
+         * The default HTTP server type, configured to use an SQLite database.
+         */
         typedef efgy::net::http::server<responder<efgy::database::sqlite>,state<efgy::database::sqlite>> server;
+
+        /**\brief Default session
+         *
+         * The default HTTP session type, configured to use an SQLite database.
+         */
         typedef efgy::net::http::session<responder<efgy::database::sqlite>,state<efgy::database::sqlite>> session;
 
         template <typename db>
         class responder
         {
             public:
+                /**\brief Main entry point
+                 *
+                 * This is the main entry point for HTTP requests to verthandi.
+                 * This method will thus provide the services of a request
+                 * dispatcher, based on the request parameters.
+                 *
+                 * \param[out] a Data for the current request.
+                 *
+                 * \returns 'true' if the request was handled successfully.
+                 *          This function cannot fail right now, so it will
+                 *          always return 'true'.
+                 */
                 bool operator () (session &a)
                 {
                     std::ostringstream s("");
