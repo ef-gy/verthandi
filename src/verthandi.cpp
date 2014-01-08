@@ -1,4 +1,8 @@
 /**\file
+ * \brief Main function and related functionality
+ *
+ * Contains the main() function, which sets things up so that verthandi can run
+ * as intended.
  *
  * \copyright
  * Copyright (c) 2013-2014, Verthandi Project Members
@@ -35,6 +39,19 @@ using namespace boost::asio;
 using namespace boost;
 using namespace std;
 
+/**\brief Main function
+ *
+ * The main entry point for any programme; with verthandi this function will set
+ * up the requested socket by launching an HTTP server on it that serves data
+ * from the given SQLite3 database file.
+ *
+ * Note that this programme does not fork itself to the background.
+ *
+ * \param[in] argc The number of arguments in argv.
+ * \param[in] argv Command line arguments.
+ *
+ * \returns Zero on success, nonzero on failure.
+ */
 int main (int argc, char* argv[])
 {
     try
