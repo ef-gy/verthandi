@@ -132,6 +132,25 @@ create table collaborator_tags
     tag text not null
 );
 
+-- user account data
+create table users
+(
+    id integer not null primary key,
+    username text not null unique,
+    -- hashed password
+    pw_hash text not null,
+    -- ...and the salt used for hashing
+    salt text not null
+);
+
+-- resolve relation between users and collaborators
+-- (one user account nee
+create table user_collaborator_mapping
+(
+    user integer not null references users(id),
+    collaborator integer not null references collaborators(id)
+);
+
 create view time_spent_on_tasks as select
     end_time - start_time as time,
     collaborator,
@@ -151,5 +170,7 @@ create view total_time_on_project as select
     collaborator,
     project
     from time_spent_on_tasks join tasks 
-    on tasks.id = total_time_on_tasks.task
+    on tasks.id = time_spent_on_tasks.task
     group by project, collaborator;
+
+
