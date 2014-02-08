@@ -32,6 +32,8 @@
 #if !defined(VERTHANDI_PROJECT_H)
 #define VERTHANDI_PROJECT_H
 
+#include <ef.gy/maybe.h>
+
 #include <verthandi/object.h>
 
 #include <ostream>
@@ -66,6 +68,10 @@ namespace verthandi
              * Corresponds to the projects.name field in the database.
              */
             std::string name;
+            efgy::maybe<std::string> description;
+            efgy::maybe<double> real;
+            efgy::maybe<int> urgency;
+            efgy::maybe<int> importance;
 
             using object<db>::id;
             using object<db>::valid;

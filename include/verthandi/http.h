@@ -38,8 +38,6 @@
 #include <verthandi/task.h>
 #include <verthandi/data-sqlite-verthandi.h>
 
-#include <boost/regex.hpp>
-
 #include <sstream>
 
 namespace verthandi
@@ -120,11 +118,11 @@ namespace verthandi
                 {
                     std::ostringstream s("");
 
-                    static const boost::regex rproject("/verthandi/project/(\\d+)");
-                    static const boost::regex rtask("/verthandi/task/(\\d+)");
-                    boost::smatch matches;
+                    static const std::regex rproject("/verthandi/project/(\\d+)");
+                    static const std::regex rtask("/verthandi/task/(\\d+)");
+                    std::smatch matches;
 
-                    if (boost::regex_match(a.resource, matches, rproject))
+                    if (std::regex_match(a.resource, matches, rproject))
                     {
                         int projectID = 0;
                         std::stringstream is(matches[1]);
@@ -135,7 +133,7 @@ namespace verthandi
                           << project<db>(a.state->sql, projectID)
                           << "</verthandi>";
                     }
-                    else if (boost::regex_match(a.resource, matches, rtask))
+                    else if (std::regex_match(a.resource, matches, rtask))
                     {
                         int taskID = 0;
                         std::stringstream is(matches[1]);
