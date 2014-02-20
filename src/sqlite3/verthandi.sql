@@ -54,12 +54,14 @@ create table currency_conversion
 create table collaborators
 (
     id integer not null primary key,
-    first_name text not null,
     -- this lacks a NOT NULL constraint because not all cultures
     -- have first and last names
-    last_name text,
+    first_name text,
+    last_name text not null,
     email text,
-    phone text
+    phone text,
+    form_of_address text,
+    preferred_pronoun text
 );
 
 create table works_on
