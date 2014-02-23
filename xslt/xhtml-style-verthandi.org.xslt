@@ -36,5 +36,13 @@
     <h1>
       <xsl:value-of select="@name"/>
     </h1>
+    <xsl:choose>
+      <xsl:when test="text()">
+        <p><xsl:value-of select="text()"/></p>
+      </xsl:when>
+      <xsl:otherwise>
+        <p>No description.</p>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
 </xsl:stylesheet>
