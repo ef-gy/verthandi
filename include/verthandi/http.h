@@ -129,9 +129,9 @@ namespace verthandi
                         is >> projectID;
 
                         s << "<?xml version='1.0' encoding='utf-8'?>"
-                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>"
-                          << project<db>(a.state->sql, projectID)
-                          << "</verthandi>";
+                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>";
+                        s << efgy::render::XML() << project<db>(a.state->sql, projectID);
+                        s << "</verthandi>";
                     }
                     else if (std::regex_match(a.resource, matches, rtask))
                     {

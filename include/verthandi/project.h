@@ -32,6 +32,7 @@
 #if !defined(VERTHANDI_PROJECT_H)
 #define VERTHANDI_PROJECT_H
 
+#include <ef.gy/render-xml.h>
 #include <ef.gy/maybe.h>
 
 #include <verthandi/object.h>
@@ -68,8 +69,9 @@ namespace verthandi
              * Corresponds to the projects.name field in the database.
              */
             std::string name;
+
             efgy::maybe<std::string> description;
-            efgy::maybe<double> real;
+            efgy::maybe<double> deadline;
             efgy::maybe<int> urgency;
             efgy::maybe<int> importance;
 
@@ -89,11 +91,15 @@ namespace verthandi
              */
             bool sync (void)
             {
-                typename db::statement select("select name from projects where id=?1", database);
+                typename db::statement select("select name, description, deadline, urgency, importance from projects where id=?1", database);
                 select.bind(1, id);
                 if (select.step() && select.row)
                 {
                     select.get(0, name);
+                    description.nothing = !select.get(1, description.just);
+                    deadline.nothing    = !select.get(2, deadline.just);
+                    urgency.nothing     = !select.get(3, urgency.just);
+                    importance.nothing  = !select.get(4, importance.just);
                     return (valid = true);
                 }
                 return (valid = false);
@@ -114,10 +120,37 @@ namespace verthandi
      *          streams.
      */
     template <typename C, typename db>
-    std::basic_ostream<C> &operator << (std::basic_ostream<C> &out, const project<db> &p)
+    efgy::render::oxmlstream<C> operator << (efgy::render::oxmlstream<C> out, const project<db> &p)
     {
-        return p.valid ? out << "<project id='" << p.id << "' name='" << p.name << "'/>"
-                       : out << "<project id='" << p.id << "' status='invalid'/>";
+        if (!p.valid)
+        {
+            out.stream << "<project id='" << p.id << "' status='invalid'/>";
+        }
+        else
+        {
+            out.stream << "<project id='" << p.id << "' name='" << p.name << "'";
+            if (p.deadline)
+            {
+                out.stream << " deadline='" << p.deadline.just << "'";
+            }
+            if (p.urgency)
+            {
+                out.stream << " urgency='" << p.urgency.just << "'";
+            }
+            if (p.importance)
+            {
+                out.stream << " importance='" << p.importance.just << "'";
+            }
+            if (p.description)
+            {
+                out.stream << ">" << p.description.just << "</project>";
+            }
+            else
+            {
+                out.stream << "/>";
+            }
+        }
+        return out;
     }
 };
 
