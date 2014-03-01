@@ -36,6 +36,16 @@ create table task_depends
     dependent integer not null references task (id)
 );
 
+create table customers
+(
+    id integer not null primary key,
+    name text not null,
+    primary_contact text,
+    primary_contact_email text,
+    primary_contact_phone text,
+    notes text
+);
+
 create table currencies
 (
     currency text not null primary key
@@ -146,7 +156,6 @@ create table users
 );
 
 -- resolve relation between users and collaborators
--- (one user account nee
 create table user_collaborator_mapping
 (
     user integer not null references users(id),
