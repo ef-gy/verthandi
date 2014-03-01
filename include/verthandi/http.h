@@ -140,9 +140,9 @@ namespace verthandi
                         is >> taskID;
 
                         s << "<?xml version='1.0' encoding='utf-8'?>"
-                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>"
-                          << task<db>(a.state->sql, taskID)
-                          << "</verthandi>";
+                             "<verthandi xmlns='http://verthandi.org/2014/verthandi'>";
+                        s << efgy::render::XML() << task<db>(a.state->sql, taskID);
+                        s << "</verthandi>";
                     }
                     else
                     {

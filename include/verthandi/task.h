@@ -108,10 +108,17 @@ namespace verthandi
      *          streams.
      */
     template <typename C, typename db>
-    std::basic_ostream<C> &operator << (std::basic_ostream<C> &out, const task<db> &p)
+    efgy::render::oxmlstream<C> operator << (efgy::render::oxmlstream<C> out, const task<db> &p)
     {
-        return p.valid ? out << "<task id='" << p.id << "' name='" << p.title << "'/>"
-                       : out << "<task id='" << p.id << "' status='invalid'/>";
+        if (!p.valid)
+        {
+            out.stream << "<task id='" << p.id << "' status='invalid'/>";
+        }
+        else
+        {
+            out.stream << "<task id='" << p.id << "' name='" << p.title << "'/>";
+        }
+        return out;
     }
 };
 
