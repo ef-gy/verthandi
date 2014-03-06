@@ -186,6 +186,13 @@ create view total_time_on_project as select
 
 create view task_costs as select
     task,
-    sum(total_time * hourly_rate) as cost
+    sum(total_time * hourly_rate) as cost,
+    project
     from total_time_on_tasks join tasks
-    on tasks.id = task;
+    on tasks.id = task
+    group by task;
+
+create view project_costs as select
+    sum(cost) as cost
+    from task_costs 
+    group by project;
