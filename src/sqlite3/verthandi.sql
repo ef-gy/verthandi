@@ -184,4 +184,8 @@ create view total_time_on_project as select
     on tasks.id = time_spent_on_tasks.task
     group by project, collaborator;
 
-
+create view task_costs as select
+    task,
+    sum(total_time * hourly_rate) as cost
+    from total_time_on_tasks join tasks
+    on tasks.id = task;
