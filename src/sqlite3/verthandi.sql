@@ -125,24 +125,28 @@ create table project_tags
     project integer not null references projects (id),
     tag text not null
 );
+create index ptags_idx on project_tags (tag);
 
 create table task_tags
 (
     task integer not null references tasks (id),
     tag text not null
 );
+create index tasktags_idx on task_tags (tag);
 
 create table team_tags
 (
     team integer not null references teams (id),
     tag text not null
 );
+create index teamtags_idx on team_tags (tag);
 
 create table collaborator_tags
 (
     collaborator integer not null references collaborators (id),
     tag text not null
 );
+create index ctags_idx on collaborator_tags (tag);
 
 -- user account data
 create table users
@@ -196,3 +200,5 @@ create view project_costs as select
     sum(cost) as cost
     from task_costs 
     group by project;
+
+
